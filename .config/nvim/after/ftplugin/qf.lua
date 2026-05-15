@@ -1,0 +1,19 @@
+-- local function delete_qf_entry()
+-- 	local qf_list = vim.fn.getqflist()
+--
+-- 	local current_line = vim.fn.line(".")
+--
+-- 	if not qf_list or #qf_list == 0 then
+-- 		vim.notify("Quickfix list is empty.", vim.log.levels.WARN)
+-- 		return
+-- 	end
+--
+-- 	table.remove(qf_list, current_line)
+-- 	vim.fn.setqflist(qf_list, "r")
+-- end
+--
+-- vim.keymap.set("n", "dd", delete_qf_entry, {
+-- 	silent = true,
+-- 	buffer = true,
+-- 	desc = "Delete current quickfix entry",
+-- })

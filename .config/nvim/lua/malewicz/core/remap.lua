@@ -7,7 +7,7 @@ vim.keymap.set({ "n", "v", "o" }, "k", "gj", { silent = true, desc = "Move down 
 vim.keymap.set({ "n", "v", "o" }, "j", "<Left>", { silent = true, desc = "Move left" })
 vim.keymap.set({ "n", "v", "o" }, ";", "<Right>", { silent = true, desc = "Move right" })
 
-vim.keymap.set({ "n", "v", "o" }, "h", ";", { noremap = true, desc = "Repeat motion forward" })
+-- vim.keymap.set({ "n", "v", "o" }, "h", ";", { noremap = true, desc = "Repeat motion forward" })
 -- vim.keymap.set({ "n", "v", "o" }, "g", ",", { noremap = true, desc = "Repeat motion backward" })
 
 vim.keymap.set("v", "K", ":m '>+1<CR>gv=gv")
@@ -36,31 +36,13 @@ vim.keymap.set("n", "x", '"_x', opts)
 vim.keymap.set("n", "Q", "<nop>")
 
 -- Quickfix list navigation
-vim.keymap.set("n", "<C-l>", "<cmd>cnext<CR>zz")
-vim.keymap.set("n", "<C-k>", "<cmd>cprev<CR>zz")
+-- vim.keymap.set("n", "<C-l>", "<cmd>cnext<CR>zz")
+-- vim.keymap.set("n", "<C-k>", "<cmd>cprev<CR>zz")
 vim.keymap.set("n", "<leader>l", "<cmd>lnext<CR>zz")
 vim.keymap.set("n", "<leader>k", "<cmd>lprev<CR>zz")
 
 -- Search and replace
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
-
--- Toggle quickfix list
-vim.keymap.set("n", "<leader>q", function()
-	if vim.fn.getqflist({ winid = 0 }).winid ~= 0 then
-		vim.cmd("cclose")
-	else
-		vim.cmd("copen")
-	end
-end, opts)
-
-vim.api.nvim_create_autocmd("TextYankPost", {
-	group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
-	callback = function()
-		-- vim.api.nvim_set_hl(0, "YankHighlight", { bg = "white", fg = "black" })
-		-- vim.highlight.on_yank({ higroup = "YankHighlight", timeout = 100 })
-		vim.highlight.on_yank()
-	end,
-})
 
 vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
 vim.keymap.set("n", "<leader>w", "<cmd>lua vim.diagnostic.open_float()<CR>", opts)
@@ -96,19 +78,19 @@ local function ResizeMode()
 		elseif char == ";" then
 			vim.cmd("vertical resize -2")
 		elseif char == "k" then
-			vim.cmd("resize -2")
+			vim.cmd("resize -1")
 		elseif char == "l" then
 			vim.cmd("resize +2")
 		elseif char == "q" then
 			break
 		end
+
+		vim.cmd("redraw")
 	end
 end
 vim.keymap.set("n", "<leader>r", ResizeMode, opts)
 
 -- Copy filepath to the clipboard
 vim.keymap.set("n", "<leader>fp", function()
-	local filePath = vim.fn.expand("%:~")
-	vim.fn.setreg("+", filePath)
-	print("File path copied to clipboard: " .. filePath) -- Optional: print message to confirm
-end, { desc = "Copy file path to clipboard" })
+	vim.fn.setreg("+", vim.fn.expand("%:~"))
+end)

@@ -2,6 +2,24 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		dependencies = {
+			{
+				"folke/lazydev.nvim",
+				ft = "lua",
+				dependencies = {
+					{
+						"DrKJeff16/wezterm-types",
+						lazy = true,
+						version = false,
+					},
+				},
+				opts = {
+					library = {
+						{ path = "${3rd}/luv/library", words = { "vim%.uv" } },
+						{ path = "plenary.nvim", words = { "describe", "it", "assert" } },
+						{ path = "wezterm-types", mods = { "wezterm" } },
+					},
+				},
+			},
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
 			"whoissethdaniel/mason-tool-installer.nvim",
@@ -24,26 +42,43 @@ return {
 			require("mason-tool-installer").setup({
 				ensure_installed = {
 					"codelldb",
+					"clang-format",
+					"ormolu",
+
 					"prettier",
+					"biome",
 					"eslint_d",
-					"stylua",
 					"stylelint",
+
+					"stylua",
+
 					"golines",
 					"goimports",
-					"golangci-lint",
+					"golangci_lint_ls",
+
+					"shfmt",
 				},
 			})
 
 			require("mason-lspconfig").setup({
 				ensure_installed = {
+					"clangd",
+					"elixirls",
+					"hls",
+					"zls",
+					"csharp_ls",
 					"lua_ls",
 					"rust_analyzer",
 					"gopls",
+					"templ",
+					"bashls",
+
 					"ts_ls",
 					"tailwindcss",
 					"svelte",
-					"zls",
-					"csharp_ls",
+					"html",
+					"cssls",
+					"jsonls",
 				},
 				handlers = {
 					function(server_name)
@@ -52,26 +87,57 @@ return {
 						})
 					end,
 
-					gopls = {
-						settings = {
-							gopls = {
-								analyses = { unusedparams = true },
-								staticcheck = true,
-								useplaceholders = true,
-								completeunimported = true,
+					tailwindcss = function()
+						require("lspconfig").tailwindcss.setup({
+							capabilities = capabilities,
+							filetypes = { "html", "css", "scss", "javascript", "typescript", "react", "templ" },
+							init_options = { userLanguages = { templ = "html" } },
+						})
+					end,
+
+					-- golangci_lint_ls = {},
+					gopls = function()
+						require("lspconfig").gopls.setup({
+							capabilities = capabilities,
+							settings = {
+								gopls = {
+									gofumpt = true,
+									analyses = { unusedparams = true },
+									staticcheck = true,
+									useplaceholders = true,
+									completeunimported = true,
+								},
 							},
-						},
-					},
-					svelte = {
-						on_attach = function(client, _)
-							vim.api.nvim_create_autocmd("bufwritepost", {
-								pattern = { "*.js", "*.ts" },
-								callback = function(ctx)
-									client.notify("$/ondidchangetsorjsfile", { uri = ctx.match })
-								end,
-							})
-						end,
-					},
+						})
+					end,
+
+					elixirls = function()
+						require("lspconfig").elixirls.setup({
+							capabilities = capabilities,
+							cmd = { "elixir-ls" },
+						})
+					end,
+
+					hls = function()
+						require("lspconfig").hls.setup({
+							capabilities = capabilities,
+							filetypes = { "haskell", "lhaskell", "cabal" },
+						})
+					end,
+
+					svelte = function()
+						require("lspconfig").svelte.setup({
+							capabilities = capabilities,
+							on_attach = function(client, _)
+								vim.api.nvim_create_autocmd("bufwritepost", {
+									pattern = { "*.js", "*.ts" },
+									callback = function(ctx)
+										client.notify("$/ondidchangetsorjsfile", { uri = ctx.match })
+									end,
+								})
+							end,
+						})
+					end,
 
 					zls = function()
 						local lspconfig = require("lspconfig")
@@ -95,8 +161,8 @@ return {
 							capabilities = capabilities,
 							settings = {
 								Lua = {
-									diagnostics = {
-										globals = { "vim" },
+									completion = {
+										callSnippet = "Replace",
 									},
 									format = {
 										enable = true,
@@ -139,6 +205,7 @@ return {
 				sources = cmp.config.sources({
 					{ name = "copilot", group_index = 2 },
 					{ name = "nvim_lsp" },
+					{ name = "lazydev", group_index = 0 },
 				}, {
 					{ name = "buffer" },
 				}),

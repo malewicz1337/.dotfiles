@@ -1,7 +1,7 @@
 return {
 	{
 		"nvim-telescope/telescope.nvim",
-		tag = "0.1.8",
+		tag = "v0.2.1",
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
@@ -16,20 +16,19 @@ return {
 				defaults = {
 					file_ignore_patterns = {
 						"node_modules",
-						".git",
-						".cache",
-						".DS_Store",
-						".vscode",
-						".obsidian",
-						".Trash",
-						".sum",
+						"%.git/",
+						"%.cache",
+						"%.DS_Store",
+						"%.obsidian",
+						"%.Trash",
+						"%.sum",
 						"package.json",
 						"package-lock.json",
-						"yarn.lock",
 						"*.log",
-						"docs",
 						"dist",
 						"build",
+						"*.mjs",
+						"*.svg",
 					},
 					path_display = { "smart" },
 					mappings = {
@@ -38,6 +37,20 @@ return {
 							["<C-k>"] = actions.move_selection_next,
 							["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
 						},
+						n = {
+							["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+						},
+					},
+				},
+				pickers = {
+					find_files = {
+						hidden = true,
+					},
+					live_grep = {
+						additional_args = { "--hidden" },
+					},
+					grep_string = {
+						additional_args = { "--hidden" },
 					},
 				},
 				extensions = {
@@ -61,6 +74,7 @@ return {
 			vim.keymap.set("n", "<leader>ph", ":Telescope help_tags<CR>", opts)
 			vim.keymap.set("n", "<leader>pk", ":Telescope keymaps<CR>", opts)
 			vim.keymap.set("n", "<leader>pb", ":Telescope buffers<CR>", opts)
+			vim.keymap.set("n", "<leader>pt", ":Telescope colorscheme enable_preview=true<CR>", opts)
 
 			vim.keymap.set("n", "<leader>pS", function()
 				local word = vim.fn.expand("<cWORD>")
