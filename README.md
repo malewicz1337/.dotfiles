@@ -1,62 +1,180 @@
 # The Configuration Abyss
 
-Welcome, brave/foolish traveler, to the digital manifestation of my anxiety. This repository isn't a collection of configuration files; it's a meticulously documented descent into madness. Each line of code is a monument to time that could have been spent on something useful, like learning to bake or talking to another human being.
+Personal, macOS-first dotfiles. The repository is the source of truth; files under `$HOME` are symlinks. A Linux base setup is included for shells, editors, Git, Starship, and tmux.
 
-> "I have spent more time configuring my text editor than I have spent writing code in it."
->
-> — Every developer, probably.
+## Requirements
 
-## The Philosophy (Or Lack Thereof)
+### macOS
 
-The guiding principle here is simple: **Why be productive when you can *feel* productive?**
+Apple Silicon, macOS 13+, Xcode Command Line Tools, and Homebrew:
 
-This setup is engineered to shave nanoseconds off tasks I perform dozens of times a day, a time-saving that is immediately negated by the hours I spend tweaking the font ligatures or changing the color of the active tmux pane border. It's the digital equivalent of building a custom Formula 1 car to go grocery shopping. Sure, it's fast, but you'll spend all weekend in the garage because the KERS unit is acting up again.
+```bash
+xcode-select --install
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+eval "$(/opt/homebrew/bin/brew shellenv)"
+```
 
-## Dissection of the Damned
+### Linux
 
-Here's a breakdown of the various circles of this configuration hell.
+Install Homebrew's build prerequisites. Debian/Ubuntu example:
 
-### `.zshrc`
+```bash
+sudo apt-get update
+sudo apt-get install -y build-essential procps curl file git
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+```
 
-The gateway drug. It started with a simple alias for `git status` and has now metastasized into a baroque monstrosity of functions, prompts, and environment variables that I no longer understand. It's so "optimized" that my terminal now takes longer to start than a 1990s desktop PC booting Windows 95.
+Use equivalent prerequisite packages on other distributions.
 
-### `.vimrc` & `.config/nvim/`
+### Common command-line packages
 
-Ah, the heart of the beast. My relationship with Vim/Neovim is the longest and most abusive one of my life.
+```bash
+brew install \
+  bat eza fd fish fnm fzf gh git-delta lazygit \
+  neovim ripgrep starship tmux vim
+fnm install --lts
+```
 
-* **`.vimrc`**: A relic. A fossilized reminder of a simpler time before the Great Lua Migration. I keep it here for archaeological purposes. Do not touch it, lest you awaken ancient evils.
-* **`init.lua`**: A sprawling metropolis of Lua where plugins are born, fight for supremacy, and are eventually deprecated. I am its weary, god-like mayor. I haven't written a line of actual, shipping code in weeks, but my LSP completion is now faster by a value approaching the Planck time ($t_P$).
-* **`lua/malewicz/`**: My so-called "custom" modules. This is where I copy-paste snippets from smarter people on the internet and pretend I came up with them.
+These provide the configured shell, editors, prompt, Git tooling, fuzzy search, Telescope search, previews, aliases, tmux, and Node/npm for Neovim's web tooling. Git and `make` are also required; Xcode CLT provides them on macOS, and the Linux prerequisites provide them on Linux.
 
-### `.config/aerospace/`
+### macOS applications
 
-Because dragging windows with a mouse is for the unenlightened. My windows now arrange themselves with a brutalist efficiency that mirrors the void in my soul. I haven't seen my desktop wallpaper since 2023. I'm not even sure I have one anymore.
+```bash
+brew install --cask font-monaspice-nerd-font ghostty vscodium
+brew install --cask nikitabobko/tap/aerospace
+```
 
-### `.config/wezterm/`
+Ghostty uses `MonaspiceNe Nerd Font Mono`. VSCodium provides the Fish `code` alias.
 
-A terminal emulator so fast it renders my typos in glorious, GPU-accelerated 144Hz. It's configured in Lua, because clearly I hadn't written enough Lua configuring Neovim.
+## Install
 
-### `.config/tmux/`
+```bash
+export DOTFILES="$HOME/.dotfiles"
+git clone https://github.com/malewicz1337/.dotfiles.git "$DOTFILES"
+mkdir -p "$HOME/.config" "$HOME/.config/git"
+```
 
-So I can have terminals within terminals, all showing me different ways I'm failing to meet deadlines. It's like the movie *Inception*, but with more command prompts and existential dread. The status bar provides a constant, unblinking stream of system metrics that confirm my CPU is as idle as my social life.
+Back up existing targets first. `ln -s` intentionally refuses to overwrite them.
 
-## Installation: A Cry for Help
+### Common links: macOS and Linux
 
-You want this curse upon your own house? Seriously? Fine. Who am I to stand in the way of your self-destructive tendencies?
+```bash
+ln -s "$DOTFILES/.config/fish" "$HOME/.config/fish"
+ln -s "$DOTFILES/.config/nvim" "$HOME/.config/nvim"
+ln -s "$DOTFILES/.config/starship" "$HOME/.config/starship"
+ln -s "$DOTFILES/.config/git/ignore" "$HOME/.config/git/ignore"
 
-1.  Clone this repository somewhere you'll forget about it.
-    ```bash
-    git clone https://github.com/malewicz1337/dotfiles.git ~/.dotfiles
-    ```
-2.  Run some sort of symlinking script that you haven't written yet but swear you will. Or just copy-paste them manually. I don't care. Your life, your rules.
-3.  Spend the next 48 hours debugging why your terminal prompt is now just the `?` character and nothing works.
-4.  Realize you were happier before.
-5.  There is no step 5. This is your life now.
+for file in .bash_profile .bashrc .gitconfig .hushlogin .profile .tmux.conf .vimrc; do
+  ln -s "$DOTFILES/$file" "$HOME/$file"
+done
+```
 
-## Acknowledgments
+### Additional macOS links
 
-My sincerest gratitude to the creators of these fine tools for enabling this sickness. And to the countless bloggers and GitHub users whose configurations I've plundered in the dead of night. Your work has been invaluable in building this magnificent, pointless temple of configuration.
+```bash
+ln -s "$DOTFILES/.config/aerospace" "$HOME/.config/aerospace"
+ln -s "$DOTFILES/.config/ghostty" "$HOME/.config/ghostty"
+```
+
+AeroSpace and this Ghostty configuration are macOS-specific. The retained WezTerm configuration is optional and not linked by default.
+
+## Linux adjustments
+
+Before using the common links on Linux or another account:
+
+- Replace machine-specific Docker paths in `.profile` and `.config/fish/config.fish` with `$HOME/.docker/bin`.
+- In `.tmux.conf`, set `default-shell` to the absolute result of `command -v fish`.
+- In Neovim's `oil.lua`, point the local plugin directory to `$HOME/Desktop/oil-git.nvim`.
+- In Neovim's `conform.lua`, point CSharpier to `$HOME/.dotnet/tools/csharpier`.
+- Do not link AeroSpace or the macOS Ghostty configuration.
+
+The remaining Fish, Bash, Starship, Git, Vim, Neovim, and tmux configuration is the Linux base.
+
+## Bootstrap
+
+### Fish
+
+Add Fish's absolute path to `/etc/shells`, then make it the login shell:
+
+```bash
+FISH="$(command -v fish)"
+grep -qxF "$FISH" /etc/shells || echo "$FISH" | sudo tee -a /etc/shells
+chsh -s "$FISH"
+```
+
+### tmux
+
+Install TPM, start tmux, then press `Ctrl-a` followed by `I`:
+
+```bash
+git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+```
+
+TPM installs `tmux-open`, `tmux-resurrect`, and `tmux-continuum`.
+
+### Neovim
+
+The Oil integration requires a local checkout:
+
+```bash
+git clone https://github.com/malewicz1337/oil-git.nvim.git "$HOME/Desktop/oil-git.nvim"
+nvim
+```
+
+`lazy.nvim` installs plugins declared under `.config/nvim/lua/malewicz/plugins/`; exact revisions are in `lazy-lock.json`. Use `:Lazy sync` and `:Mason` after first launch.
+
+Mason automatically requests:
+
+- Tools: `codelldb`, `clang-format`, `ormolu`, `prettier`, `biome`, `eslint_d`, `stylelint`, `stylua`, `golines`, `goimports`, `golangci_lint_ls`, `shfmt`.
+- LSPs: `clangd`, `elixirls`, `hls`, `zls`, `csharp_ls`, `lua_ls`, `rust_analyzer`, `gopls`, `templ`, `bashls`, `ts_ls`, `tailwindcss`, `svelte`, `html`, `cssls`, `jsonls`.
+
+Install language toolchains only as needed: Go provides `gofmt`, Rust provides `rustfmt`, Elixir provides `mix`, Zig provides `zigfmt`, and .NET provides CSharpier:
+
+```bash
+dotnet tool install --global csharpier
+```
+
+## Optional integrations
+
+Fish detects `zoxide` and adds conventional paths for asdf, Bun, pnpm, Cargo, .NET tools, Docker, and OMP. Install the optional shell helpers with:
+
+```bash
+brew install zoxide asdf
+```
+
+Optional WezTerm setup:
+
+```bash
+brew install --cask wezterm font-meslo-lg-nerd-font
+ln -s "$DOTFILES/.config/wezterm" "$HOME/.config/wezterm"
+```
+
+## Portability and secrets
+
+Review `.profile`, Fish, tmux, Neovim's local plugin path, CSharpier path, Git identity, and global ignores before using another machine. Use `$HOME` instead of account-specific absolute paths.
+
+SSH keys, GitHub CLI credentials, OMP state, Docker credentials, and other authenticated state are intentionally excluded.
+
+## Verify
+
+```bash
+fish -n "$HOME/.config/fish/config.fish"
+nvim --headless '+qall'
+vim -Nu "$HOME/.vimrc" -n -es -c 'qa!'
+tmux -L dotfiles-smoke -f "$HOME/.tmux.conf" new-session -d
+tmux -L dotfiles-smoke kill-server
+TERM=xterm-256color STARSHIP_CONFIG="$HOME/.config/starship/starship.toml" starship prompt
+git config --global user.name
+```
+
+On macOS, also run:
+
+```bash
+aerospace reload-config
+/Applications/Ghostty.app/Contents/MacOS/ghostty +show-config
+```
 
 ## License
 
-This project is released under the [MIT License](LICENSE). Feel free to use, copy, modify, and distribute this. If it breaks your machine, you get to keep both pieces. It's probably for the best.
+Released under the [MIT License](LICENSE).
