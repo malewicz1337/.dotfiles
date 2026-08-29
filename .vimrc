@@ -43,4 +43,3 @@ noremap <C-w><C-semicolon> <C-w>l
 noremap ' ;
 
 set rtp+=/opt/homebrew/opt/fzf
-

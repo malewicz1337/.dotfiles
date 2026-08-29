@@ -1,7 +1,7 @@
 require("malewicz.core")
 require("malewicz.lazy")
 
-vim.cmd.colorscheme("gruvbox")
+ColorMyPensils()
 
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd

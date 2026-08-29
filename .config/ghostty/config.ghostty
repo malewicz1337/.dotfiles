@@ -1,0 +1,40 @@
+font-family = MonaspiceNe Nerd Font Mono
+font-style = ExtraLight
+font-size = 24
+
+theme = Aura
+background = #282c35
+background-image = /Users/malewicz/.config/ghostty/backgrounds/witch.png
+background-image-opacity = 0.10
+background-image-fit = stretch
+
+window-padding-x = 0
+window-padding-y = 0
+window-padding-balance = true
+window-padding-color = extend-always
+macos-titlebar-style = hidden
+macos-window-buttons = hidden
+window-save-state = always
+window-step-resize = true
+resize-overlay = never
+
+cursor-style = block
+cursor-style-blink = false
+confirm-close-surface = false
+quit-after-last-window-closed = true
+macos-option-as-alt = true
+auto-update = check
+copy-on-select = false
+mouse-hide-while-typing = true
+focus-follows-mouse = true
+unfocused-split-opacity = 0.85
+
+shell-integration-features = cursor,no-sudo,title,ssh-env,ssh-terminfo,path
+
+keybind = super+j=csi:1;2S
+keybind = super+k=csi:15;2~
+keybind = super+l=csi:17;2~
+keybind = super+semicolon=csi:19;2~
+keybind = ctrl+semicolon=csi:1;2R
+keybind = ctrl+p=esc:b
+keybind = ctrl+n=esc:f

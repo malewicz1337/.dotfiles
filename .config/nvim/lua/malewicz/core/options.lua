@@ -17,7 +17,7 @@ vim.opt.guicursor = ""
 vim.opt.number = true
 vim.opt.relativenumber = true
 
-vim.opt.cursorline = false
+vim.opt.cursorline = true
 vim.opt.wrap = true
 vim.opt.ignorecase = true
 vim.opt.smartcase = true

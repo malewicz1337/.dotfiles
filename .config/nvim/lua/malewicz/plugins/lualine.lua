@@ -5,6 +5,16 @@ return {
 		config = function()
 			local lualine = require("lualine")
 			local lazy_status = require("lazy.status")
+			local theme = require("lualine.themes.rose-pine")
+
+			for mode, sections in pairs(theme) do
+				for section_name, colors in pairs(sections) do
+					if mode ~= "inactive" and section_name == "a" then
+						colors.fg = colors.bg
+					end
+					colors.bg = "NONE"
+				end
+			end
 
 			vim.api.nvim_create_autocmd("RecordingEnter", {
 				callback = function()
@@ -29,7 +39,7 @@ return {
 				options = {
 					section_separators = { left = "", right = "" },
 					component_separators = { left = "", right = "" },
-					theme = "auto",
+					theme = theme,
 					globalstatus = true,
 				},
 				sections = {
